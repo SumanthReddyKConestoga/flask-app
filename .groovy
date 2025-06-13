@@ -1,36 +1,47 @@
 pipeline {
-    agent any
-    
-    
-    stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'Assignment01C&O'
-                    url: 'https://github.com/SumanthReddyKConestoga/flask-app.git',
-                    credentialsId: 'github-pat'
-            }
-        }
-        stage('Build') {
-            steps {
-                echo 'Simulating build step (e.g., compiling code)'
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Running basic tests'
-            }
-        }
+  agent any
+  triggers {
+    pollSCM('H/5 * * * *')        // every 5 minutes
+  }
+  stages {
+    stage('Checkout') {
+      steps {
+        // wrap your git step in parentheses & steps block
+        git(
+          url: 'https://github.com/SumanthReddyKConestoga/flask-app.git',
+          branch: 'Assignment01C&O',
+          credentialsId: 'github-pat'
+        )
+      }
     }
-    post {
-        success {
-            mail to: 'Skonannagari0660@conestogac.on.ca',
-                 subject: "Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Good news! Jenkins build succeeded.\n\nURL: ${env.BUILD_URL}"
-        }
-        failure {
-            mail to: 'Skonannagari0660@conestogac.on.ca',
-                 subject: "Build Failure: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                 body: "Alert! Jenkins build failed.\n\nURL: ${env.BUILD_URL}"
-        }
+    stage('Build') {
+      steps {
+        sh 'echo "🚀 Building application…"' 
+      }
     }
+    stage('Test') {
+      steps {
+        sh 'echo "✅ Running tests…"' 
+      }
+    }
+    // Optional deploy stage
+    stage('Deploy') {
+      when { expression { false } }
+      steps {
+        sh 'echo "📦 Deploying (skipped)…"'
+      }
+    }
+  }
+  post {
+    success {
+      mail to: 'team@yourcompany.com',
+           subject: "✅ ${env.JOB_NAME} #${env.BUILD_NUMBER} succeeded",
+           body: "View at ${env.BUILD_URL}"
+    }
+    failure {
+      mail to: 'team@yourcompany.com',
+           subject: "❌ ${env.JOB_NAME} #${env.BUILD_NUMBER} failed",
+           body: "View at ${env.BUILD_URL}"
+    }
+  }
 }
