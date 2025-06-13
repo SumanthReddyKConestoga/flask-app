@@ -1,13 +1,12 @@
 pipeline {
     agent any
-    environment {
-        GITHUB_CREDS = credentials('github-pat')
-    }
+    
+    
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'Assignment',C&O
-                    url: 'https://github.com/SumanthReddyKConestoga/SumanthReddyKConestoga/Skonannagari0660@conestogac.on.ca/.git',
+                git branch: 'Assignment01C&O'
+                    url: 'https://github.com/SumanthReddyKConestoga/flask-app.git',
                     credentialsId: 'github-pat'
             }
         }
