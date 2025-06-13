@@ -1,47 +1,40 @@
 pipeline {
   agent any
   triggers {
-    pollSCM('H/5 * * * *')        // every 5 minutes
+    pollSCM('H/5 * * * *')       // every 5 minutes
   }
   stages {
     stage('Checkout') {
       steps {
-        // wrap your git step in parentheses & steps block
-        git(
-          url: 'https://github.com/SumanthReddyKConestoga/flask-app.git',
-          branch: 'Assignment01C&O',
-          credentialsId: 'github-pat'
-        )
+        checkout([
+          $class: 'GitSCM',
+          branches: [[name: '*/Assignment01C&O']],             // or */Assignment01C&O
+          userRemoteConfigs: [[
+            url: 'https://github.com/SumanthReddyKConestoga/flask-app.git',
+            credentialsId: 'github-pat'
+          ]]
+        ])
       }
     }
     stage('Build') {
       steps {
-        sh 'echo "🚀 Building application…"' 
+        bat 'echo 🚀 Building application…'
       }
     }
     stage('Test') {
       steps {
-        sh 'echo "✅ Running tests…"' 
-      }
-    }
-    // Optional deploy stage
-    stage('Deploy') {
-      when { expression { false } }
-      steps {
-        sh 'echo "📦 Deploying (skipped)…"'
+        bat 'echo ✅ Running tests…'
       }
     }
   }
   post {
     success {
-      mail to: 'team@yourcompany.com',
-           subject: "✅ ${env.JOB_NAME} #${env.BUILD_NUMBER} succeeded",
-           body: "View at ${env.BUILD_URL}"
+      // ← this echo is mandatory, it’s “the step” for the success branch
+      bat 'echo ✅ BUILD PASSED: ${env.JOB_NAME} #${env.BUILD_NUMBER}'
     }
     failure {
-      mail to: 'team@yourcompany.com',
-           subject: "❌ ${env.JOB_NAME} #${env.BUILD_NUMBER} failed",
-           body: "View at ${env.BUILD_URL}"
+      // ← similarly, you need at least one step here
+      bat 'echo ❌ BUILD FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}'
     }
   }
 }
