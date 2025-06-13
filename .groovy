@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main',
+                git branch: 'Assignment',C&O
                     url: 'https://github.com/SumanthReddyKConestoga/SumanthReddyKConestoga/Skonannagari0660@conestogac.on.ca/.git',
                     credentialsId: 'github-pat'
             }
